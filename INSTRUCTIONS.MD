@@ -47,3 +47,121 @@ You can change this to other OpenAI models such as:
 - This project uses the **standard OpenAI API**, not Azure OpenAI Service
 - Ensure your OpenAI account has sufficient credits/quota
 - Keep your API key secure and never commit it to version control
+
+---
+
+## Teams Integration
+
+### Connect to Microsoft Teams
+
+1. Navigate to the [Microsoft Teams Admin Center](https://admin.teams.microsoft.com/)
+2. Go to **Teams apps** → **Manage apps**
+3. Upload your agent app package (`.zip` file containing `manifest.json`)
+4. Configure app permissions and policies as needed
+5. Enable the app for your organization or specific users/groups
+
+**For development/testing:**
+
+- Use the Teams Toolkit in VS Code to sideload the app directly
+- Run `npm run start` to launch the local development server
+- The app will be available in Teams under "Apps" → "Built for your org"
+
+---
+
+## SharePoint Knowledge Base Integration
+
+### Connect Agent to SharePoint Folder
+
+To enable your agent to retrieve knowledge from SharePoint documents:
+
+1. **Register the app in Azure AD:**
+   - Go to [Azure Portal](https://portal.azure.com/) → **Azure Active Directory** → **App registrations**
+   - Create a new registration or use your existing Teams app registration
+   - Add the following API permissions:
+     - `Sites.Read.All` (for reading SharePoint content)
+     - `Files.Read.All` (for accessing files)
+
+2. **Configure SharePoint site access:**
+   - Identify the SharePoint site URL and folder path containing your knowledge base
+   - Grant the app access to the specific site or document library
+
+3. **Set environment variables:**
+
+   ```
+   SHAREPOINT_SITE_URL=https://yourtenant.sharepoint.com/sites/yoursite
+   SHAREPOINT_FOLDER_PATH=/Shared Documents/KnowledgeBase
+   ```
+
+4. **Initialize the SharePoint connector** in your agent configuration to index and retrieve documents
+
+---
+
+## Agent Prompt Optimization
+
+### Configure Agent Prompt for Better Knowledge Retrieval
+
+To improve the quality of responses when using knowledge base content:
+
+1. **Structure your system prompt** to prioritize retrieved context:
+
+   ```
+   You are a helpful assistant with access to company documentation.
+   When answering questions:
+   1. First, search the knowledge base for relevant information
+   2. Base your answers on the retrieved documents when available
+   3. Cite sources when referencing specific documents
+   4. If no relevant information is found, clearly state this
+   ```
+
+2. **Configure retrieval parameters:**
+   - Set appropriate chunk sizes for document splitting (recommended: 500-1000 tokens)
+   - Adjust the number of retrieved chunks (top-k) based on context window limits
+   - Use semantic search with embeddings for better relevance
+
+3. **Add context instructions** to guide response formatting:
+   - Specify how to handle conflicting information
+   - Define fallback behavior when knowledge base doesn't contain answers
+   - Set tone and verbosity preferences
+
+---
+
+## Optional Integrations
+
+### Add Loom Video Integration (Tool Call)
+
+Enable your agent to interact with Loom videos for enhanced multimedia support:
+
+1. **Obtain Loom API credentials:**
+   - Sign up for a [Loom Developer account](https://www.loom.com/developers)
+   - Create an API application and obtain your API key
+
+2. **Set environment variable:**
+
+   ```
+   LOOM_API_KEY=<your-loom-api-key>
+   ```
+
+3. **Implement as a tool call** in your agent:
+
+   ```typescript
+   const loomTool = {
+     name: "get_loom_video",
+     description: "Retrieve Loom video details and transcript",
+     parameters: {
+       type: "object",
+       properties: {
+         video_id: {
+           type: "string",
+           description: "The Loom video ID or URL"
+         }
+       },
+       required: ["video_id"]
+     }
+   };
+   ```
+
+4. **Use cases:**
+   - Fetch video transcripts for searchable content
+   - Extract video metadata (title, duration, thumbnail)
+   - Generate summaries from video content
+   - Link relevant training videos in agent responses
