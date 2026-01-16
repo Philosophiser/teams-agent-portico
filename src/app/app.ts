@@ -12,8 +12,12 @@ import { MyDataSource } from "./myDataSource";
 // Create storage for conversation history
 const storage = new LocalStorage();
 
-// Initialize the standalone data source
-const dataSource = new MyDataSource("company-knowledge");
+// Initialize the data source with retrieval config
+const dataSource = new MyDataSource("company-knowledge", {
+    maxChunkSize: config.retrieval.maxChunkSize,
+    topK: config.retrieval.topK,
+    minScore: config.retrieval.minScore
+});
 dataSource.init();
 
 // Load instructions from file on initialization

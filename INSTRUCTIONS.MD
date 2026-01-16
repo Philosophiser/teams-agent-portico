@@ -1,5 +1,19 @@
 # AI Model Configuration Instructions
 
+## Implementation Roadmap
+
+| Feature | Status | Priority | Notes |
+|---------|--------|----------|-------|
+| OpenAI API Integration | ✅ Implemented | - | Core functionality working |
+| Teams Integration | ✅ Implemented | - | Message handling, citations working |
+| Local Markdown Knowledge Base | ✅ Implemented | - | Loads from `src/data/` |
+| Improved Search Algorithm | ✅ Implemented | High | Multi-keyword extraction, scoring |
+| Prompt Optimization | ✅ Implemented | High | Enhanced instructions.txt |
+| SharePoint Integration | 🔲 Planned | Medium | Requires Azure AD setup |
+| Semantic Search/Embeddings | 🔲 Planned | Medium | Future enhancement |
+
+---
+
 ## Overview
 
 This project connects to the **OpenAI API directly** (not Azure OpenAI). The integration uses the `@microsoft/teams.openai` package with the standard OpenAI endpoint.
@@ -123,45 +137,3 @@ To improve the quality of responses when using knowledge base content:
    - Define fallback behavior when knowledge base doesn't contain answers
    - Set tone and verbosity preferences
 
----
-
-## Optional Integrations
-
-### Add Loom Video Integration (Tool Call)
-
-Enable your agent to interact with Loom videos for enhanced multimedia support:
-
-1. **Obtain Loom API credentials:**
-   - Sign up for a [Loom Developer account](https://www.loom.com/developers)
-   - Create an API application and obtain your API key
-
-2. **Set environment variable:**
-
-   ```
-   LOOM_API_KEY=<your-loom-api-key>
-   ```
-
-3. **Implement as a tool call** in your agent:
-
-   ```typescript
-   const loomTool = {
-     name: "get_loom_video",
-     description: "Retrieve Loom video details and transcript",
-     parameters: {
-       type: "object",
-       properties: {
-         video_id: {
-           type: "string",
-           description: "The Loom video ID or URL"
-         }
-       },
-       required: ["video_id"]
-     }
-   };
-   ```
-
-4. **Use cases:**
-   - Fetch video transcripts for searchable content
-   - Extract video metadata (title, duration, thumbnail)
-   - Generate summaries from video content
-   - Link relevant training videos in agent responses
